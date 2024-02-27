@@ -4,26 +4,34 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    [SerializeField] private float _lerpRate = 15f;
+
+    private Vector3 _nextPosition;
+
     internal void OnChange(List<DataChange> changes)
     {
-        Vector3 position = transform.position;
+        _nextPosition = transform.position;
 
         foreach (var dataChange in changes)
         {
             switch (dataChange.Field)
             {
                 case "x":
-                    position.x = (float)dataChange.Value;
+                    _nextPosition.x = (float)dataChange.Value;
                     break;
                 case "y":
-                    position.z = (float)dataChange.Value;
+                    _nextPosition.z = (float)dataChange.Value;
                     break;
                 default:
                     Debug.LogWarning("Не обрабатывается поле с именем: " + dataChange.Field);
                     break;
             }
         }
+    }
 
-        transform.position = position;
+    private void Update()
+    {
+        if (_nextPosition != Vector3.zero)
+            transform.position = Vector3.Lerp(transform.position, _nextPosition, _lerpRate * Time.deltaTime);
     }
 }
