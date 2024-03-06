@@ -31,8 +31,9 @@ public class PlayerCharacter : MonoBehaviour
         _rigidbody.velocity = velocity;
     }
 
-    public void GetPlayerMove(out Vector3 position)
+    public void GetPlayerMove(out Vector3 position, out Vector3 velocity)
     {
         position = transform.position;
+        velocity = _rigidbody.velocity;
     }
 }
