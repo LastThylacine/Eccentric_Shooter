@@ -1,18 +1,20 @@
 using UnityEngine;
 
-public class PlayerCharacter : MonoBehaviour
+public class PlayerCharacter : Character
 {
     [SerializeField] private Rigidbody _rigidbody;
-    [SerializeField] private float _speed = 2f;
     [SerializeField] private Transform _head;
     [SerializeField] private Transform _cameraPoint;
     [SerializeField] private float _maxHeadAngle = 90;
     [SerializeField] private float _minHeadAngle = -90;
     [SerializeField] private float _jumpForce = 5;
+    [SerializeField] private CheckFly _checkFly;
+    [SerializeField] private float _jumpDelay = 0.2f;
     private float _inputH;
     private float _inputV;
     private float _rotateY;
     private float _currentRotateX;
+    private float _jumpTime;
 
     private void Start()
     {
@@ -53,8 +55,9 @@ public class PlayerCharacter : MonoBehaviour
         //Vector3 direction = new Vector3(_inputH, 0f, _inputV);
         //transform.position += direction * Time.deltaTime * _speed;
 
-        Vector3 velocity = (transform.forward * _inputV + transform.right * _inputH).normalized * _speed;
+        Vector3 velocity = (transform.forward * _inputV + transform.right * _inputH).normalized * speed;
         velocity.y = _rigidbody.velocity.y;
+        base.velocity = velocity;
         _rigidbody.velocity = velocity;
     }
 
@@ -64,24 +67,12 @@ public class PlayerCharacter : MonoBehaviour
         velocity = _rigidbody.velocity;
     }
 
-    private bool _isFly = true;
-    private void OnCollisionStay(Collision collision)
-    {
-        var collisionPoints = collision.contacts;
-        for (int i = 0; i < collisionPoints.Length; i++)
-        {
-            if (collisionPoints[i].normal.y > 0.45f) _isFly = false;
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        _isFly = true;
-    }
-
     public void Jump()
     {
-        if (!_isFly)
-            _rigidbody.AddForce(0, _jumpForce, 0, ForceMode.VelocityChange);
+        if (_checkFly.IsFly) return;
+        if (Time.time - _jumpTime < _jumpDelay) return;
+
+        _jumpTime = Time.time;
+        _rigidbody.AddForce(0, _jumpForce, 0, ForceMode.VelocityChange);
     }
 }
