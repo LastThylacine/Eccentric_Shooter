@@ -1,4 +1,5 @@
 using Colyseus;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -73,5 +74,15 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
     public void SendMessage(string key, Dictionary<string, object> data)
     {
         _room.Send(key, data);
+    }
+
+    public void SendMessage(string key, string data)
+    {
+        _room.Send(key, data);
+    }
+
+    public string GetSessionID()
+    {
+        return _room.SessionId;
     }
 }
