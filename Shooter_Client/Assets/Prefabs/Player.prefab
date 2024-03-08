@@ -173,7 +173,7 @@ MonoBehaviour:
   _bulletPrefab: {fileID: 3356012773665605480, guid: 1fab54bb55d7f834981366afdb57ff5b,
     type: 3}
   _bulletPoint: {fileID: 4747561945875924634}
-  _buleltSpeed: 10
+  _bulletSpeed: 10
   _shootDelay: 0.2
 --- !u!114 &3535162127072513641
 MonoBehaviour:
