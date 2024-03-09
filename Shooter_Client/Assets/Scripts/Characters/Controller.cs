@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Controller : MonoBehaviour
 {
@@ -25,7 +26,9 @@ public class Controller : MonoBehaviour
 
         bool space = Input.GetKeyDown(KeyCode.Space);
 
-        _player.SetInput(h, v, mouseX * _mouseSensitivity);
+        bool isCrouching = Input.GetKey(KeyCode.LeftControl);
+
+        _player.SetInput(h, v, mouseX * _mouseSensitivity, isCrouching);
         _player.RotateX(-mouseY * _mouseSensitivity);
         if (space) _player.Jump();
 
@@ -45,7 +48,7 @@ public class Controller : MonoBehaviour
 
     private void SendMove()
     {
-        _player.GetPlayerMove(out Vector3 position, out Vector3 velocity, out float rotateX, out float rotateY);
+        _player.GetPlayerMove(out Vector3 position, out Vector3 velocity, out float rotateX, out float rotateY, out bool isCrouching);
 
         Dictionary<string, object> data = new Dictionary<string, object>()
         {
@@ -56,7 +59,8 @@ public class Controller : MonoBehaviour
             {"vY", velocity.y },
             {"vZ", velocity.z },
             {"rX", rotateX },
-            {"rY", rotateY }
+            {"rY", rotateY }, 
+            {"iC", isCrouching }
         };
 
         MultiplayerManager.Instance.SendMessage("move", data);

@@ -29,6 +29,7 @@ public class EnemyController : MonoBehaviour
     {
         _player = player;
         _character.SetSpeed(player.speed);
+        _character.SetCrouchScaleFactor(player.crouch);
         player.OnChange += OnChange;
     }
 
@@ -61,6 +62,7 @@ public class EnemyController : MonoBehaviour
 
         Vector3 position = _character.targetPosition;
         Vector3 velocity = _character.velocity;
+        bool isCrouching = _character.isCrouching;
 
         foreach (var dataChange in changes)
         {
@@ -90,12 +92,15 @@ public class EnemyController : MonoBehaviour
                 case "rY":
                     _character.SetRotateY((float)dataChange.Value);
                     break;
+                case "iC":
+                    isCrouching = (bool)dataChange.Value;
+                    break;
                 default:
                     Debug.LogWarning("Не обрабатывается поле с именем: " + dataChange.Field);
                     break;
             }
         }
 
-        _character.SetMovement(position, velocity, AverageInterval);
+        _character.SetMovement(position, velocity, AverageInterval, isCrouching);
     }
 }

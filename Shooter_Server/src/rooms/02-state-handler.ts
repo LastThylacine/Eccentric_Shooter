@@ -3,6 +3,9 @@ import { Schema, type, MapSchema } from "@colyseus/schema";
 
 export class Player extends Schema {
     @type("number")
+    crouch = 0;
+
+    @type("number")
     speed = 0;
 
     @type("number")
@@ -28,6 +31,9 @@ export class Player extends Schema {
 
     @type("number")
     rY = 0;
+
+    @type("boolean")
+    iC = false;
 }
 
 export class State extends Schema {
@@ -39,6 +45,7 @@ export class State extends Schema {
     createPlayer(sessionId: string, data: any) {
         const player = new Player();
         player.speed = data.speed;
+        player.crouch = data.crouch;
 
         this.players.set(sessionId, player);
     }
@@ -57,6 +64,7 @@ export class State extends Schema {
         player.vZ = data.vZ;
         player.rX = data.rX;
         player.rY = data.rY;
+        player.iC = data.iC;
     }
 }
 

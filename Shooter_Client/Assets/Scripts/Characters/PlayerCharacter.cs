@@ -10,6 +10,7 @@ public class PlayerCharacter : Character
     [SerializeField] private float _jumpForce = 5;
     [SerializeField] private CheckFly _checkFly;
     [SerializeField] private float _jumpDelay = 0.2f;
+    [SerializeField] private float _crouchSmoothness = 15f;
     private float _inputH;
     private float _inputV;
     private float _rotateY;
@@ -30,11 +31,26 @@ public class PlayerCharacter : Character
         RotateY();
     }
 
-    public void SetInput(float inputH, float inputV, float rotateY)
+    private void Update()
+    {
+        if (isCrouching)
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * crouchScaleFactor, _crouchSmoothness * Time.deltaTime);
+        }
+        else
+        {
+            transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, _crouchSmoothness * Time.deltaTime);
+        }
+    }
+
+    public void SetInput(float inputH, float inputV, float rotateY, bool isCrouching)
     {
         _inputH = inputH;
         _inputV = inputV;
         _rotateY += rotateY;
+
+        if (!_checkFly.IsFly)
+            base.isCrouching = isCrouching;
     }
 
     public void RotateX(float value)
@@ -61,18 +77,20 @@ public class PlayerCharacter : Character
         _rigidbody.velocity = velocity;
     }
 
-    public void GetPlayerMove(out Vector3 position, out Vector3 velocity, out float rotateX, out float rotateY)
+    public void GetPlayerMove(out Vector3 position, out Vector3 velocity, out float rotateX, out float rotateY, out bool isCrouching)
     {
         position = transform.position;
         velocity = _rigidbody.velocity;
 
         rotateX = _head.localEulerAngles.x;
         rotateY = transform.eulerAngles.y;
+
+        isCrouching = base.isCrouching;
     }
 
     public void Jump()
     {
-        if (_checkFly.IsFly) return;
+        if (_checkFly.IsFly || isCrouching) return;
         if (Time.time - _jumpTime < _jumpDelay) return;
 
         _jumpTime = Time.time;
