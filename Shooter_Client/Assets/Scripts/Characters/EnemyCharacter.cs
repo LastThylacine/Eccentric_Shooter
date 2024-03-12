@@ -1,7 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyCharacter : Character
 {
+    private string _clientID;
+
     [SerializeField] private Health _health;
     [SerializeField] private Transform _head;
     public Vector3 targetPosition { get; private set; } = Vector3.zero;
@@ -25,9 +28,22 @@ public class EnemyCharacter : Character
         }
     }
 
+    public void Init(string clientID)
+    {
+        _clientID = clientID;
+    }
+
     public void ApplyDamage(int damage)
     {
         _health.ApplyDamage(damage);
+
+        var data = new Dictionary<string, object>
+        {
+            { "id", _clientID },
+            { "value", damage }
+        };
+
+        MultiplayerManager.Instance.SendMessage("damage", data);
     }
 
     public void SetSpeed(float value) => speed = value;
@@ -36,6 +52,11 @@ public class EnemyCharacter : Character
     {
         maxHealth = value;
         _health.SetMax(value);
+        _health.SetCurrent(value);
+    }
+
+    public void RestoreHP(int value)
+    {
         _health.SetCurrent(value);
     }
 

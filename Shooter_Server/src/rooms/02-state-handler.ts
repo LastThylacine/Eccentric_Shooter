@@ -2,8 +2,14 @@ import { Room, Client } from "colyseus";
 import { Schema, type, MapSchema } from "@colyseus/schema";
 
 export class Player extends Schema {
+    @type("uint8")
+    loss = 0;
+
     @type("int8")
-    hp = 0;
+    maxHP = 0;
+    
+    @type("int8")
+    currentHP = 0;
 
     @type("number")
     speed = 0;
@@ -42,7 +48,8 @@ export class State extends Schema {
     createPlayer(sessionId: string, data: any) {
         const player = new Player();
         player.speed = data.speed;
-        player.hp = data.hp;
+        player.maxHP = data.hp;
+        player.currentHP = data.hp;
 
         this.players.set(sessionId, player);
     }
@@ -80,6 +87,31 @@ export class StateHandlerRoom extends Room<State> {
         this.onMessage("shoot", (client, data) => {
             this.broadcast("Shoot", data, {except: client});
         })
+
+        this.onMessage("damage", (client, data) => {
+            const clientId = data.id;
+            const player = this.state.players.get(data.id);
+            
+            let hp = player.currentHP - data.value;
+
+            if(hp > 0){
+                player.currentHP = hp;
+                return;
+            }
+
+            player.loss++;
+            player.currentHP = player.maxHP;
+
+            for(var i = 0; i < this.clients.length; i++){
+                if(this.clients[i].sessionId != clientId) continue;
+
+                const x = Math.floor(Math.random() * 50) - 25;
+                const z = Math.floor(Math.random() * 50) - 25;
+
+                const message = JSON.stringify({x, z});
+                this.clients[i].send("Restart", message);
+            }
+        })
     }
 
     onAuth(client, options, req) {
@@ -87,6 +119,7 @@ export class StateHandlerRoom extends Room<State> {
     }
 
     onJoin (client: Client, data: any) {
+        if(this.clients.length > 1) this.lock();
         client.send("hello", "world");
         this.state.createPlayer(client.sessionId, data);
     }
@@ -98,5 +131,4 @@ export class StateHandlerRoom extends Room<State> {
     onDispose () {
         console.log("Dispose StateHandlerRoom");
     }
-
 }
