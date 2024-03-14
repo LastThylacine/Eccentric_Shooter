@@ -7,10 +7,16 @@ public class Controller : MonoBehaviour
 {
     [SerializeField] private float _restartDelay = 3f;
     [SerializeField] private PlayerCharacter _player;
-    [SerializeField] private PlayerGun _gun;
+    [SerializeField] private PlayerGunSwitch _gunSwitch;
     [SerializeField] private float _mouseSensitivity = 2f;
     private MultiplayerManager _multiplayerManager;
     private bool _hold;
+    private PlayerGun _gun;
+    private KeyCode[] keyCodes = {
+        KeyCode.Alpha1,
+        KeyCode.Alpha2,
+        KeyCode.Alpha3,
+    };
 
     private void Start()
     {
@@ -35,9 +41,19 @@ public class Controller : MonoBehaviour
         _player.RotateX(-mouseY * _mouseSensitivity);
         if (space) _player.Jump();
 
+        SendMove();
+
+        if (!_gunSwitch.IsCanShoot) return;
+
         if (isShoot && _gun.TryShoot(out ShootInfo shootInfo)) SendShoot(ref shootInfo);
 
-        SendMove();
+        for (int i = 0; i < keyCodes.Length; i++)
+        {
+            if (Input.GetKeyDown(keyCodes[i]))
+            {
+                StartCoroutine(_gunSwitch.RunSetGun(i));
+            }
+        }
     }
 
     private void SendShoot(ref ShootInfo shootInfo)
@@ -80,7 +96,7 @@ public class Controller : MonoBehaviour
         Dictionary<string, object> data = new Dictionary<string, object>()
         {
             {"pX", info.x },
-            {"pY", 0 },
+            {"pY", info.y },
             {"pZ", info.z },
             {"vX", 0 },
             {"vY", 0 },
@@ -98,6 +114,11 @@ public class Controller : MonoBehaviour
         yield return new WaitForSecondsRealtime(_restartDelay);
         _hold = false;
     }
+
+    public void SetGun(PlayerGun gun)
+    {
+        _gun = gun;
+    }
 }
 
 public struct ShootInfo
@@ -114,5 +135,6 @@ public struct ShootInfo
 public struct RestartInfo
 {
     public float x;
+    public float y;
     public float z;
 }

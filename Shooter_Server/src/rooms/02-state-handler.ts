@@ -1,6 +1,18 @@
 import { Room, Client } from "colyseus";
 import { Schema, type, MapSchema } from "@colyseus/schema";
 
+export class Vector3 {
+    x = 0;
+    y = 0;
+    z = 0;
+
+    constructor(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+}
+
 export class Player extends Schema {
     @type("uint8")
     loss = 0;
@@ -15,13 +27,13 @@ export class Player extends Schema {
     speed = 0;
 
     @type("number")
-    pX = Math.floor(Math.random() * 50) - 25;
+    pX = 0;
 
     @type("number")
     pY = 0;
 
     @type("number")
-    pZ = Math.floor(Math.random() * 50) - 25;
+    pZ = 0;
 
     @type("number")
     vX = 0;
@@ -45,11 +57,15 @@ export class State extends Schema {
 
     something = "This attribute won't be sent to the client-side";
 
-    createPlayer(sessionId: string, data: any) {
+    createPlayer(sessionId: string, data: any, pos: Vector3) {
         const player = new Player();
         player.speed = data.speed;
         player.maxHP = data.hp;
         player.currentHP = data.hp;
+
+        player.pX = pos.x;
+        player.pY = pos.y;
+        player.pZ = pos.z;
 
         this.players.set(sessionId, player);
     }
@@ -72,7 +88,11 @@ export class State extends Schema {
 }
 
 export class StateHandlerRoom extends Room<State> {
-    maxClients = 4;
+    maxClients = 2;
+
+    spawnPoints : Array<Vector3> = [new Vector3(18.8,1.67850351,1.6),
+        new Vector3(-19.1,1.67850494,-16),
+        new Vector3(-17.3,1.67850304,17)];
 
     onCreate (options) {
         console.log("StateHandlerRoom created!", options);
@@ -86,6 +106,10 @@ export class StateHandlerRoom extends Room<State> {
 
         this.onMessage("shoot", (client, data) => {
             this.broadcast("Shoot", data, {except: client});
+        })
+
+        this.onMessage("gun", (client, data) => {
+            this.broadcast("Gun", data, {except: client});
         })
 
         this.onMessage("damage", (client, data) => {
@@ -105,10 +129,15 @@ export class StateHandlerRoom extends Room<State> {
             for(var i = 0; i < this.clients.length; i++){
                 if(this.clients[i].sessionId != clientId) continue;
 
-                const x = Math.floor(Math.random() * 50) - 25;
-                const z = Math.floor(Math.random() * 50) - 25;
+                let spawnPointID = Math.floor(Math.random() * this.spawnPoints.length);
 
-                const message = JSON.stringify({x, z});
+                const newPos = this.spawnPoints[spawnPointID];
+
+                const x = newPos.x;
+                const y = newPos.y;
+                const z = newPos.z;
+
+                const message = JSON.stringify({x, y, z});
                 this.clients[i].send("Restart", message);
             }
         })
@@ -121,7 +150,12 @@ export class StateHandlerRoom extends Room<State> {
     onJoin (client: Client, data: any) {
         if(this.clients.length > 1) this.lock();
         client.send("hello", "world");
-        this.state.createPlayer(client.sessionId, data);
+        
+        let spawnPointID = Math.floor(Math.random() * this.spawnPoints.length);
+
+        const newPos = this.spawnPoints[spawnPointID];
+
+        this.state.createPlayer(client.sessionId, data, newPos);
     }
 
     onLeave (client) {
