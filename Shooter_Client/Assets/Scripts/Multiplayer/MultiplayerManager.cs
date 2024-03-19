@@ -29,12 +29,13 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         {
             {"skins", _skins.Length },
             {"points", _spawnPoints.Length },
-            {"speed", _player.speed },
             {"hp", _player.maxHealth },
             {"pX", spawnPosition.x },
             {"pY", spawnPosition.y },
             {"pZ", spawnPosition.z },
-            {"rY", spawnRotation.y }
+            {"rY", spawnRotation.y },
+            {"speed", _player.speed },
+            {"crouch", _player.crouchScaleFactor }
         };
 
         _room = await Instance.client.JoinOrCreate<State>("state_handler", data);

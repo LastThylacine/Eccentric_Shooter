@@ -248,8 +248,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <maxHealth>k__BackingField: 10
   <speed>k__BackingField: 2
-  <crouchScaleFactor>k__BackingField: 0.8
+<<<<<<< HEAD
   _health: {fileID: 4124739776967343012}
+=======
+  <crouchScaleFactor>k__BackingField: 0.8
+>>>>>>> Week_2_Homework
   _head: {fileID: 5522743303319927220}
   _rotationSmoothness: 25
   _crouchSmoothness: 15

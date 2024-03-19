@@ -58,13 +58,16 @@ export class State extends Schema {
         const player = new Player();
         player.skin = skin;
         player.speed = data.speed;
+<<<<<<< HEAD
         player.maxHP = data.hp;
         player.currentHP = data.hp;
         player.pX = data.pX;
         player.pY = data.pY;
         player.pZ = data.pZ;
         player.rY = data.rY; 
+=======
         player.crouch = data.crouch;
+>>>>>>> Week_2_Homework
 
         this.players.set(sessionId, player);
     }

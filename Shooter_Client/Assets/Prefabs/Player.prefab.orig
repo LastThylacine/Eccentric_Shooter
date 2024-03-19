@@ -379,10 +379,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94cea737b3110904c81d015ab1b52971, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
   <maxHealth>k__BackingField: 10
   <speed>k__BackingField: 6
-  <crouchScaleFactor>k__BackingField: 0.7
   _health: {fileID: -672437235688586054}
+=======
+  <speed>k__BackingField: 2
+  <crouchScaleFactor>k__BackingField: 0.7
+>>>>>>> Week_2_Homework
   _rigidbody: {fileID: 9179199646455697922}
   _head: {fileID: 2328209809649955849}
   _cameraPoint: {fileID: 7111757450295130500}
