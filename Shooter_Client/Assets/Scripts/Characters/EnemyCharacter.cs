@@ -67,7 +67,6 @@ public class EnemyCharacter : Character
             { "id", _clientID },
             { "value", damage }
         };
-        Debug.Log(damage);
         MultiplayerManager.Instance.SendMessage("damage", data);
     }
 

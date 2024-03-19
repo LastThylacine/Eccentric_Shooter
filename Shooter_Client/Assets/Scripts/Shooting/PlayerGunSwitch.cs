@@ -17,11 +17,6 @@ public class PlayerGunSwitch : MonoBehaviour
         SetGun(0);
     }
 
-    private void Update()
-    {
-        Debug.Log(IsCanShoot);
-    }
-
     public IEnumerator RunSetGun(int currentGunIndex)
     {
         if (_currentGunIndex == currentGunIndex) yield break;
