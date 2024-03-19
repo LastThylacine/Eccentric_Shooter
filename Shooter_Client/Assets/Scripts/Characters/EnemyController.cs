@@ -5,8 +5,9 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    [SerializeField] private EnemyGunSwitch _gunSwitch;
     [SerializeField] private EnemyCharacter _character;
-    [SerializeField] private EnemyGun _gun;
+    private EnemyGun _gun;
     private List<float> _receiveTimeInterval = new List<float> { 0, 0, 0, 0, 0 };
     private float AverageInterval
     {
@@ -113,5 +114,10 @@ public class EnemyController : MonoBehaviour
         }
 
         _character.SetMovement(position, velocity, AverageInterval, isCrouching);
+    }
+
+    public void SetGun(EnemyGun gun)
+    {
+        _gun = gun;
     }
 }

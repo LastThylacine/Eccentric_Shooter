@@ -125,6 +125,10 @@ export class StateHandlerRoom extends Room<State> {
             this.broadcast("Shoot", data, {except: client});
         })
 
+        this.onMessage("gun", (client, data) => {
+            this.broadcast("Gun", data, {except: client});
+        })
+
         this.onMessage("damage", (client, data) => {
             const clientId = data.id;
             const player = this.state.players.get(data.id);
