@@ -504,7 +504,7 @@ MonoBehaviour:
     type: 3}
   _damage: 1
   _bulletPoint: {fileID: 4747561945875924634}
-  _bulletSpeed: 25
+  _bulletSpeed: 50
   _shootDelay: 0.2
 --- !u!114 &3535162127072513641
 MonoBehaviour:
